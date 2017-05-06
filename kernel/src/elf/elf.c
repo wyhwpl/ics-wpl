@@ -32,7 +32,7 @@ uint32_t loader() {
 
 	/* TODO: fix the magic number with the correct one */
 	const uint32_t elf_magic = 0x464c457f;
-	uint32_t *p_magic = (void *)buf;
+	uint32_t *p_magic = 0x464c457f/*(void *)buf*/;
 	nemu_assert(*p_magic == elf_magic);
 
 	/* Load each program segment */
@@ -52,14 +52,14 @@ uint32_t loader() {
 
 			/* TODO: read  the content of the segment from the ELF file 
 			 * to the memory region [VirtAddr, VirtAddr + FileSiz)
- 			 */
+  			 */
 #ifdef HAS_DEVICE
 		ide_read((void*)ph->p_vaddr,ph->p_offset,ph->p_filesz);
 #else 
 		ramdisk_read((void*)ph->p_vaddr,ph->p_offset,ph->p_filesz);
 #endif
 			 
- 			/* TODO: zero the memory region 
+  			/* TODO: zero the memory region 
 			 * [VirtAddr + FileSiz, VirtAddr + MemSiz)
 			 */
         memset((void*)ph->p_vaddr+ph->p_filesz,0,ph->p_memsz-ph->p_filesz);
@@ -70,8 +70,8 @@ uint32_t loader() {
 			uint32_t new_brk = ph->p_vaddr + ph->p_memsz - 1;
 			if(brk < new_brk) { brk = new_brk; }
 #endif
- 		}
- 	}
+  		}
+  	}
 
 	volatile uint32_t entry = elf->e_entry;
 
